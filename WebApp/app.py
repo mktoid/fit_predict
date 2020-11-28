@@ -103,14 +103,19 @@ if st.button('Рассчитать вероятность'):
     item['Число комнат'] = rooms
     item['Число телев'] = tv
 
-    st.write(item)
+    #prepare data to fit the model
+    df = pd.DataFrame(item, index=[0])
 
+    data_diagnos = []
+    data_risk = []
+
+    for m in models:
+        data_diagnos.append(m)
+        data_risk.append(models[m].predict_proba(feats[m])[1] * 100)
 
     chart_df = pd.DataFrame()
-    chart_df['Риск, %'] = [11, 7, 18, 16, 22]
-    chart_df['Диагноз'] = ['Артериальная гипертензия','ОНМК','Сердечная недостаточность',
-    'Стенокардия, ИБС, инфаркт миокарда',
-    'Прочие заболевания сердца']
+    chart_df['Риск, %'] = data_risk
+    chart_df['Диагноз'] = data_diagnos
 
     fig = px.bar(chart_df, x='Риск, %', 
                 y='Диагноз', 
@@ -122,3 +127,4 @@ if st.button('Рассчитать вероятность'):
                 )
 
     st.plotly_chart(fig)
+    
